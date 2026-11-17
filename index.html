@@ -316,13 +316,13 @@ return{o,m:'Random '+t+' design ✓ (Dusra design = naya)'}}
 const IC=[[/mail/i,'✉️'],[/data|sql|store|memory/i,'🗄️'],[/\bai\b|agent|model|brain/i,'🤖'],[/api|web|http|link|site/i,'🌐'],[/chat|slack|message/i,'💬'],[/pay|money|price|kamai|profit/i,'💰'],[/user|customer|client/i,'👤'],[/file|doc|report|note/i,'📄'],[/check|test|verify|review/i,'✅'],[/risk|stop|loss|warn/i,'⚠️'],[/time|schedule|plan/i,'⏰'],[/chart|trad|stock/i,'📈']],DI=['⚡','🧩','⚙️','🔀','📦','🔔','🎯','🛠️'];
 const icon=(t,i)=>{const m=IC.find(x=>x[0].test(t));return m?m[1]:DI[i%DI.length]};
 function rr(x,y,w,h,r){const p=[],q=(cx,cy,a0)=>{for(let i=0;i<=6;i++){const a=a0+i*Math.PI/12;p.push([cx+Math.cos(a)*r,cy+Math.sin(a)*r])}};q(x+w-r,y+r,-Math.PI/2);q(x+w-r,y+h-r,0);q(x+r,y+h-r,Math.PI/2);q(x+r,y+r,Math.PI);p.push(p[0]);return p}
-function wfNode(o,cx,cy,t,sub,col,i,sz,round){t=String(t).slice(0,16);const w=sz||92;o.push(mk('pen',{pts:rr(cx-w/2,cy-w/2,w,w,round?w/2:18),c:col,lw:2.2,g:18,fx:'glow',fill:false}),mk('pen',{pts:rr(cx-w/2+7,cy-w/2+7,w-14,w-14,round?w/2-7:12),c:col,lw:1,g:4,fx:'glow',fill:false}),TT(icon(t+' '+(sub||''),i),cx-(w>70?17:11),cy-(w>70?18:12),w>70?34:22,'#ffffff',0),TT(t,cx-t.length*3.6,cy+w/2+22,w>70?14:12,'#ffffff',4));if(sub)o.push(TT(sub.slice(0,26),cx-Math.min(sub.length,26)*2.8,cy+w/2+40,11,col,2))}
+function wfNode(o,cx,cy,t,sub,col,i,sz,round){t=String(t);if(t.length>18){const ws=t.split(' ');let r='';for(const w of ws){if((r+' '+w).trim().length>17)break;r=(r+' '+w).trim()}t=(r||t.slice(0,16))+(r.length<t.length?'…':'')}const w=sz||92;o.push(mk('pen',{pts:rr(cx-w/2,cy-w/2,w,w,round?w/2:18),c:col,lw:2.2,g:18,fx:'glow',fill:false}),mk('pen',{pts:rr(cx-w/2+7,cy-w/2+7,w-14,w-14,round?w/2-7:12),c:col,lw:1,g:4,fx:'glow',fill:false}),TT(icon(t+' '+(sub||''),i),cx-(w>70?17:11),cy-(w>70?18:12),w>70?34:22,'#ffffff',0),TT(t,cx-t.length*3.6,cy+w/2+22,w>70?14:12,'#ffffff',4));if(sub)o.push(TT(sub.slice(0,26),cx-Math.min(sub.length,26)*2.8,cy+w/2+40,11,col,2))}
 function wfLink(o,a,b,col,dash,vert){const pts=[],dx=vert?0:(b[0]-a[0])/2,dy=vert?(b[1]-a[1])/2:0;for(let i=0;i<=24;i++){const u=i/24,v=1-u,c1=[a[0]+dx,a[1]+dy],c2=[b[0]-dx,b[1]-dy];pts.push([v*v*v*a[0]+3*v*v*u*c1[0]+3*v*u*u*c2[0]+u*u*u*b[0],v*v*v*a[1]+3*v*v*u*c1[1]+3*v*u*u*c2[1]+u*u*u*b[1]])}o.push(mk('pen',{pts,c:col,lw:1.8,g:10,fx:dash?'dash':'glow',fill:false}),mk('ellipse',{x:a[0]-4,y:a[1]-4,w:8,h:8,c:col,lw:1,g:8,fx:'glow',fill:true}),mk('ellipse',{x:b[0]-4,y:b[1]-4,w:8,h:8,c:col,lw:1,g:8,fx:'glow',fill:true}))}
 async function wfArt(raw,th){let tp,it;if(/[:\n]/.test(raw)&&raw.length<400&&parseCmd(raw).items.length){const a=parseCmd(raw);tp=a.tp;it=a.items}else{tp=ttl(clean(raw.replace(/workflow|n8n|automation|flow ?chart|pipeline|draw|bana\w*/gi,' ').replace(/\s+/g,' ').trim()||raw));gst('Hub puch raha hai...');it=(await hub(tp)).items;if(!it.length)it=fromList(DEF)}
 it=it.slice(0,10);const o=[],S=240,RW=400,all=[{t:'Start',p:[tp]}].concat(it),P=all.map((_,k)=>{const r=Math.floor(k/4),c=k%4;return[(r%2?3-c:c)*S,r*RW,r]});
 o.push(TT(tp,0,-130,26,'#ffffff',10));
-all.forEach((x,k)=>{const col=th[k%th.length],[X,Y]=P[k];wfNode(o,X,Y,x.t,k?'':x.p[0],col,k,92);if(k){const pa=P[k-1];if(pa[2]===P[k][2]){const d=X>pa[0]?1:-1;wfLink(o,[pa[0]+d*46,pa[1]],[X-d*46,Y],col,false,false)}else wfLink(o,[pa[0],pa[1]+80],[X,Y-46],col,false,true)}
-if(k)x.p.slice(0,2).forEach((q,j)=>{const tx=X+(j?55:-55),ty=Y+150;wfNode(o,tx,ty,q.slice(0,14),'',th[(k+j+2)%th.length],k+j+3,54,true);wfLink(o,[X,Y+92],[tx,ty-27],th[(k+j+2)%th.length],true,true)})});
+all.forEach((x,k)=>{const col=th[k%th.length],[X,Y]=P[k];let nt=x.t;if(k&&(!nt||nt.split(' ').length<2||nt.length<4)){const src=(x.p&&x.p[0])||nt||'';nt=src.split(' ').slice(0,4).join(' ')||nt||('Step '+k)}wfNode(o,X,Y,nt,k?'':x.p[0],col,k,92);if(k){const pa=P[k-1];if(pa[2]===P[k][2]){const d=X>pa[0]?1:-1;wfLink(o,[pa[0]+d*46,pa[1]],[X-d*46,Y],col,false,false)}else wfLink(o,[pa[0],pa[1]+80],[X,Y-46],col,false,true)}
+if(k)x.p.slice(0,2).forEach((q,j)=>{const tx=X+(j?55:-55),ty=Y+150;const qt=q.split(' ').slice(0,3).join(' ');wfNode(o,tx,ty,qt,'',th[(k+j+2)%th.length],k+j+3,54,true);wfLink(o,[X,Y+92],[tx,ty-27],th[(k+j+2)%th.length],true,true)})});
 return{o,m:'Workflow style ✓ (Dusra design = naye colours)'}}
 
 /* ===== MOTHERBOARD DIAGRAM ===== */
@@ -344,12 +344,23 @@ box(bx+Bw*.86,by+Bh*.1,34,34,'CMOS Bat',th[3%th.length],9);
 lab('(Reference layout — exact position varies by board model)',bx,by+Bh+30,'#8899aa',12);
 return{o,m:'Motherboard diagram ✓'}}
 
-const SLM=[['/chart','Trading chart pattern'],['/tree','Glowing tree'],['/emoji','Big emoji + sparkles'],['/handwriting','Handwriting style notes'],['/workflow','n8n-style workflow diagram'],['/motherboard','Motherboard diagram'],['/random','Random abstract design'],['/mindmap','Normal mind map']];
+const SLM=[['/draw','Default: normal mind map'],['/generate','Default: AI mind map'],['/chart','Trading chart pattern'],['/tree','Glowing tree'],['/vfx','Light burst / energy VFX'],['/animation','VFX + pulse animation on'],['/handwriting','Handwriting style notes'],['/workflow','n8n-style workflow diagram'],['/motherboard','Motherboard diagram'],['/random','Random abstract design'],['/mindmap','Normal mind map']];
 function slmShow(items){const b=$('slm');if(!items.length){b.hidden=true;return}b.innerHTML=items.map(([k,d])=>'<div class="slmi" style="padding:10px 14px;border-bottom:1px solid #222;cursor:pointer" data-k="'+k+'">'+'<b>'+k+'</b> <span style="opacity:.6;font-size:12px">'+d+'</span></div>').join('');b.hidden=false;[...b.children].forEach(el=>el.onclick=()=>{const k=el.dataset.k,cur=$('cmd').value,i=cur.lastIndexOf('/');$('cmd').value=cur.slice(0,i)+k+' ';b.hidden=true;$('cmd').focus()})}
 $('cmd').addEventListener('input',()=>{const v=$('cmd').value,i=v.lastIndexOf('/');if(i===-1||/\s/.test(v.slice(i+1))){$('slm').hidden=true;return}const q=v.slice(i+1).toLowerCase();slmShow(SLM.filter(([k])=>k.slice(1).startsWith(q)))});
 $('cmd').addEventListener('blur',()=>setTimeout(()=>$('slm').hidden=true,200));
+
+function vfxArt(th){const o=[],type=pick(['burst','rings','portal','lightning']);
+if(type==='burst'){const n=28;for(let i=0;i<n;i++){const a=i*6.283/n+R(-.08,.08),l=R(60,260);o.push(LNo(0,0,Math.cos(a)*l,Math.sin(a)*l,th[i%th.length],R(1.5,4),16));o.push(mk('ellipse',{x:Math.cos(a)*l-6,y:Math.sin(a)*l-6,w:12,h:12,c:th[(i+1)%th.length],lw:1,g:18,fx:'glow',fill:true}))}o.push(mk('ellipse',{x:-22,y:-22,w:44,h:44,c:'#ffffff',lw:2,g:24,fx:'glow',fill:true}))}
+else if(type==='rings'){for(let r=0;r<6;r++){const pts=[];for(let a=0;a<=6.4;a+=.1)pts.push([Math.cos(a)*(40+r*42)+Math.sin(a*3+r)*8,Math.sin(a)*(40+r*42)+Math.cos(a*3+r)*8]);o.push(mk('pen',{pts,c:th[r%th.length],lw:2.5,g:18,fx:'glow',fill:false}))}}
+else if(type==='portal'){for(let j=0;j<40;j++){const a=j*.5,r=j*6;o.push(mk('ellipse',{x:Math.cos(a)*r-4,y:Math.sin(a)*r-4,w:8,h:8,c:th[j%th.length],lw:1,g:16,fx:'glow',fill:true}))}o.push(mk('ellipse',{x:-130,y:-130,w:260,h:260,c:th[0],lw:3,g:22,fx:'glow',fill:false}))}
+else{let x=0,y=-220;const pts=[[x,y]];for(let i=0;i<9;i++){x+=R(-40,40);y+=R(30,55);pts.push([x,y])}o.push(mk('pen',{pts,c:'#fff7b0',lw:3,g:26,fx:'glow',fill:false}));for(let i=0;i<30;i++)o.push(mk('star',{x:x+R(-200,200),y:y+R(-60,160),w:R(4,10),h:R(4,10),c:pick(th),lw:1,g:14,fx:'glow',fill:true}))}
+return{o,m:'VFX '+type+' ✓ (Dusra design = naya effect)'}}
 async function agent(){const raw=$('cmd').value.trim(),L=raw.toLowerCase(),th=TH[pick(Object.keys(TH))].slice(),h=r=>r.test(L);let r=null;
 if(h(/^\/chart\b/))r=tradeChart(L.replace('/chart',''),th);
+else if(h(/^\/vfx\b/))r=vfxArt(th);
+else if(h(/^\/animation\b/)){r=vfxArt(th);$('pulse').checked=true;S.pulse=true}
+else if(h(/^\/draw\b/))return false;
+else if(h(/^\/generate\b/))return false;
 else if(h(/^\/tree\b/))r=treeArt(th);
 else if(h(/^\/emoji\b/))r=emojiArt(L,th);
 else if(h(/^\/handwriting\b/))r=await handArt(raw.replace(/\/handwriting/i,''),L,th);
